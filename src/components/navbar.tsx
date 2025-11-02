@@ -23,7 +23,7 @@ export function Navbar() {
             Contact
           </Link>
           <Button asChild size="sm">
-            <Link href="/upload">Get Started</Link>
+            <Link href="/auth">Get Started</Link>
           </Button>
         </div>
       </div>

@@ -62,7 +62,7 @@ export default function Home() {
           <div className="text-center space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
               Welcome to{" "}
-              <span className="relative inline-block">
+              <span className="relative text-white inline-block">
                 NEXTURE
                 <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10"></div>
               </span>
@@ -123,16 +123,14 @@ function Hero() {
           <div className="w-full md:w-3/5 space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Your AI-first
+                Your AI-Coach
               </span>
               <span className="block mt-2 text-foreground/90">Development</span>
               <span className="block mt-2 text-foreground/90">Partner</span>
             </h1>
-            <p className="text-lg text-muted-foreground/90 max-w-xl leading-relaxed">
-              We build high-quality, scalable platforms—client portals,
-              marketplaces, AI automations, and SaaS—using the best tools for the
-              job, no shortcuts.
-            </p>
+            {/* <p className="text-lg text-muted-foreground/90 max-w-xl leading-relaxed">
+              We will help you to prepare for the 
+            </p> */}
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Button
                 asChild
