@@ -23,11 +23,35 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Cookies from "js-cookie";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear localStorage
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("auth_token");
+    } catch (err) {
+      console.error("Failed to clear localStorage:", err);
+    }
+
+    // Clear cookies
+    try {
+      Cookies.remove("auth_token");
+    } catch (err) {
+      console.error("Failed to clear cookies:", err);
+    }
+
+    // Close mobile menu if open
+    setMobileMenuOpen(false);
+
+    // Redirect to login page
+    router.push("/auth");
+  };
 
   const navItems = [
     { label: "Home", value: "/home", icon: Home },
@@ -118,7 +142,10 @@ export default function Header() {
                       Profile
                     </span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive group">
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-destructive focus:text-destructive group"
+                    onClick={handleLogout}
+                  >
                     <LogOut className="w-4 h-4 mr-2 group-hover:text-destructive transition-colors" />
                     <span className="group-hover:text-destructive transition-colors">
                       Logout
@@ -179,7 +206,10 @@ export default function Header() {
                 <Settings className="w-5 h-5" />
                 <span>Settings</span>
               </Link>
-              <button className="flex items-center gap-3 w-full px-4 py-3 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-300">
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-300"
+              >
                 <LogOut className="w-5 h-5" />
                 <span>Logout</span>
               </button>

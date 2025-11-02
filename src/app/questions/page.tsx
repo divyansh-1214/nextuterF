@@ -1,214 +1,209 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CheckSquare, Filter, Play } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
-export default function QuestionPractice() {
-  const [difficulty, setDifficulty] = useState("all")
-  const [topic, setTopic] = useState("all")
-  const [solvingQuestion, setSolvingQuestion] = useState<number | null>(null)
-  const [code, setCode] = useState("")
+type Question = {
+    "name": string,
+    "link": string
+};
 
-  const questions = [
-    {
-      id: 1,
-      title: "Two Sum Problem",
-      difficulty: "Easy",
-      topic: "Programming",
-      solved: 1250,
-      description:
-        "Given an array of integers nums and an integer target, return the indices of the two numbers that add up to target.",
-    },
-    {
-      id: 2,
-      title: "Binary Search Tree Traversal",
-      difficulty: "Medium",
-      topic: "Data Structures",
-      solved: 850,
-      description: "Implement inorder, preorder, and postorder traversal of a binary search tree.",
-    },
-    {
-      id: 3,
-      title: "Longest Common Subsequence",
-      difficulty: "Hard",
-      topic: "Algorithms",
-      solved: 320,
-      description: "Find the length of the longest subsequence common to two strings.",
-    },
-    {
-      id: 4,
-      title: "Array Rotation",
-      difficulty: "Easy",
-      topic: "Programming",
-      solved: 2100,
-      description: "Rotate an array to the right by k steps.",
-    },
-  ]
+export default function TechInterviewPage() {
+    const router = useRouter();
+    const [jd, setJd] = useState<string>("");
+    const [limit, setLimit] = useState<number>(5);
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
-  const filteredQuestions = questions.filter((q) => {
-    const difficultyMatch = difficulty === "all" || q.difficulty === difficulty
-    const topicMatch = topic === "all" || q.topic === topic
-    return difficultyMatch && topicMatch
-  })
+    const fetchQuestions = async () => {
+        if (!jd.trim()) {
+            setError("Please paste a job description before generating questions.");
+            return;
+        }
 
-  const getDifficultyColor = (diff: string) => {
-    switch (diff) {
-      case "Easy":
-        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200"
-      case "Medium":
-        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
-      case "Hard":
-        return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
-      default:
-        return "bg-gray-100 text-gray-700"
-    }
-  }
+        setLoading(true);
+        setError(null);
+        console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
+        
+        try {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/getTQ`, {
+                jd,
+                limit,
+            });
+            // Expecting an array of questions. Be defensive about response shape.
+            const payload = res.data;
+            console.log(payload);
 
-  const handleSubmitSolution = () => {
-    if (code.trim()) {
-      console.log("[v0] Solution submitted for question", solvingQuestion, ":", code)
-      setCode("")
-      setSolvingQuestion(null)
-    }
-  }
+            let items: Question[] = [];
+            if (Array.isArray(payload)) {
+                items = payload;
+            } else if (Array.isArray(payload?.questions)) {
+                items = payload.questions;
+            } else if (Array.isArray(payload?.Question)) {
+                // some backends use "Question" key
+                items = payload.Question;
+            } else if (Array.isArray(payload?.data)) {
+                items = payload.data;
+            }
 
-  const currentQuestion = questions.find((q) => q.id === solvingQuestion)
+            setQuestions(items);
+        } catch (err: any) {
+            console.error(err);
+            setError(err?.message ?? "Failed to fetch questions");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  if (solvingQuestion && currentQuestion) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle>{currentQuestion.title}</CardTitle>
-                <CardDescription className="mt-2">{currentQuestion.description}</CardDescription>
-              </div>
-              <button onClick={() => setSolvingQuestion(null)} className="text-muted-foreground hover:text-foreground">
-                ✕
-              </button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Your Solution</label>
-              <textarea
-                placeholder="Write your code here..."
-                className="w-full p-3 border border-input rounded-md font-mono text-sm resize-none"
-                rows={10}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-            </div>
+        <div className="container mx-auto py-8 px-4">
+            <div className="max-w-4xl mx-auto">
+                <div className="mb-8">
+                    <h1 className="text-4xl font-bold mb-2">practice the Question Generator</h1>
+                    <p className="text-muted-foreground">Generate practice questions based on job descriptions</p>
+                </div>
 
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setSolvingQuestion(null)} className="flex-1">
-                Cancel
-              </Button>
-              <Button onClick={handleSubmitSolution} className="flex-1">
-                Submit Solution
-              </Button>
-            </div>
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle>Generate Questions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            fetchQuestions();
+                        }}>
+                            <div className="space-y-4">
+                                <div>
+                                    <label htmlFor="jd" className="block text-sm font-medium mb-2">
+                                        Job Description *
+                                    </label>
+                                    <Textarea
+                                        id="jd"
+                                        value={jd}
+                                        onChange={(e) => setJd(e.target.value)}
+                                        rows={8}
+                                        placeholder="Paste the complete job description here..."
+                                        className="mb-2"
+                                    />
+                                    <p className="text-xs text-muted-foreground">Provide detailed job requirements, responsibilities, and qualifications</p>
+                                </div>
 
-            <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <p className="text-sm text-blue-800 dark:text-blue-200">
-                Write your solution in any programming language. Our system will check for correctness.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="limit" className="block text-sm font-medium mb-2">
+                                            Number of Questions
+                                        </label>
+                                        <input
+                                            id="limit"
+                                            type="number"
+                                            min="1"
+                                            max="20"
+                                            value={limit}
+                                            onChange={(e) => setLimit(Math.max(1, parseInt(e.target.value) || 5))}
+                                            className="w-full px-3 py-2 border border-input rounded-md text-sm"
+                                        />
+                                    </div>
+                                </div>
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="space-y-8">
-        {/* Header */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <CheckSquare className="w-6 h-6 text-primary" />
-            <h1 className="text-4xl font-bold">Question Practice</h1>
-          </div>
-          <p className="text-muted-foreground">Practice coding questions tailored to your skill level.</p>
-        </div>
+                                <div className="flex gap-3 pt-2">
+                                    <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+                                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {loading ? "Generating..." : "Generate Questions"}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                            setJd("");
+                                            setLimit(5);
+                                            setQuestions([]);
+                                            setError(null);
+                                        }}
+                                        disabled={loading}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        Clear
+                                    </Button>
+                                </div>
+                            </div>
+                        </form>
 
-        {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2 w-full sm:w-auto bg-transparent">
-                <Filter className="w-4 h-4" />
-                Difficulty: {difficulty === "all" ? "All" : difficulty}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setDifficulty("all")}>All Levels</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDifficulty("Easy")}>Easy</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDifficulty("Medium")}>Medium</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDifficulty("Hard")}>Hard</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                        {error && (
+                            <div className="mt-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium">
+                                {error}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2 w-full sm:w-auto bg-transparent">
-                <Filter className="w-4 h-4" />
-                Topic: {topic === "all" ? "All" : topic}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setTopic("all")}>All Topics</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTopic("Programming")}>Programming</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTopic("Data Structures")}>Data Structures</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTopic("Algorithms")}>Algorithms</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {/* Questions List */}
-        <div className="grid gap-4">
-          {filteredQuestions.length > 0 ? (
-            filteredQuestions.map((question) => (
-              <Card key={question.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{question.title}</CardTitle>
-                      <CardDescription>{question.solved.toLocaleString()} people solved this</CardDescription>
+                <div className="mt-8">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold">
+                            Practice Questions {questions.length > 0 && <span className="text-lg text-muted-foreground">({questions.length})</span>}
+                        </h2>
                     </div>
-                    <div className="flex gap-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getDifficultyColor(question.difficulty)}`}
-                      >
-                        {question.difficulty}
-                      </span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground whitespace-nowrap">
-                        {question.topic}
-                      </span>
+
+                    {questions.length === 0 && !loading && (
+                        <Card>
+                            <CardContent className="py-12">
+                                <p className="text-center text-muted-foreground">
+                                    No questions yet — paste a job description and click Generate to get started.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    <div className="space-y-3">
+                        {questions.map((q, i) => (
+                            <Card
+                                key={i}
+                                className={`transition-all duration-200 ${q.link ? 'hover:border-primary hover:shadow-md cursor-pointer' : ''}`}
+                                onClick={() => {
+                                    if (q.link) {
+                                        window.open(q.link, "_blank");
+                                    }
+                                }}
+                            >
+                                <CardContent className="py-4 px-6">
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm font-semibold">
+                                                    {i + 1}
+                                                </span>
+                                                <h3 className="text-lg font-semibold">{q.name ?? `Question ${i + 1}`}</h3>
+                                            </div>
+                                            {q.link && (
+                                                <p className="text-xs text-muted-foreground mt-2">Click to practice →</p>
+                                            )}
+                                        </div>
+                                        {q.link && (
+                                            <div className="text-primary">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full sm:w-auto gap-2" onClick={() => setSolvingQuestion(question.id)}>
-                    <Play className="w-4 h-4" />
-                    Solve Problem
-                  </Button>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <Card>
-              <CardContent className="text-center py-8">
-                <p className="text-muted-foreground">No questions match your filters. Try adjusting them.</p>
-              </CardContent>
-            </Card>
-          )}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    );
 }
+
+/*
+Assumptions & notes:
+- Backend API endpoint: POST /api/getTQ -> returns JSON array of { id, title, description, starterCode? }.
+- If you prefer a richer editor (Monaco, CodeMirror) we can wire it in later.
+*/
+
