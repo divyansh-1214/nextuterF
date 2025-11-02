@@ -128,9 +128,9 @@ function Hero() {
               <span className="block mt-2 text-foreground/90">Development</span>
               <span className="block mt-2 text-foreground/90">Partner</span>
             </h1>
-            {/* <p className="text-lg text-muted-foreground/90 max-w-xl leading-relaxed">
-              We will help you to prepare for the 
-            </p> */}
+            <p className="text-lg text-muted-foreground/90 max-w-xl leading-relaxed">
+              We will help you to prepare for the interviews
+            </p>
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Button
                 asChild

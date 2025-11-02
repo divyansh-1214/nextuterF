@@ -3,9 +3,8 @@ import './globals.css'
 
 // Initialize fonts
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Nexture',
+  description: 'platfrom from where you can get the job',
 }
 
 export default function RootLayout({

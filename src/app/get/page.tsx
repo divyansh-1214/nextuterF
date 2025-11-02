@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { Play, Pause, Volume2, VolumeX, Mic, Clock } from "lucide-react";
-
+import Header from "@/components/header";
 function Get() {
   const [key, setKey] = useState<number>(0);
   const [interviewScriptState, setInterviewScript] =
@@ -215,6 +215,8 @@ function Get() {
     }
   };
   return (
+    <>
+    <Header></Header>
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {isLoading ? (
@@ -471,6 +473,7 @@ function Get() {
         )}
       </div>
     </div>
+    </>
   );
 }
 

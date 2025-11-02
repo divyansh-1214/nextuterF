@@ -54,12 +54,13 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "Home", value: "/home", icon: Home },
+    { label: "Home", value: "/Home", icon: Home },
     // { label: "Community", value: "/community", icon: Users },
     { label: "HrInterview", value: "/upload", icon: Mic },
     { label: "TechInterview", value: "/interview/tech", icon: Mic },
     { label: "Resume", value: "/resume", icon: FileText },
     { label: "Question Practice", value: "/questions", icon: CheckSquare },
+    { label: "Get job", value: "https://agentic-resume-anayzer-dc5jxnwkzybireenthwtpu.streamlit.app/", icon: CheckSquare },
   ];
 
   return (

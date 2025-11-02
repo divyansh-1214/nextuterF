@@ -3,16 +3,13 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Navbar } from "@/components/navbar"
 import { Sparkles, Target, Zap, TrendingUp } from "lucide-react"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      <Navbar />
 
       <main className="container mx-auto px-4 pt-32 pb-16">
-        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,7 +54,7 @@ export default function HomePage() {
             className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Button asChild size="lg" className="min-w-[200px]">
-              <Link href="/upload">Get Started</Link>
+              <Link href="/auth">Get Started</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="min-w-[200px] bg-transparent">
               <Link href="/about">Learn More</Link>

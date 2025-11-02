@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { Upload, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Navbar } from "@/components/navbar";
 import { useToast } from "@/hooks/use-toast";
 
 export default function UploadPage() {
@@ -119,7 +118,6 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="container mx-auto px-4 pt-32 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
