@@ -39,7 +39,7 @@ export default function AuthPage() {
         }
 
         // navigate to home or dashboard
-        router.push("/");
+        router.push("/home");
         return;
       }
 
