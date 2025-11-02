@@ -56,7 +56,7 @@ export default function AuthPage() {
         }
 
         // navigate to home or dashboard
-        router.push("/home");
+        router.push("/Home");
         return;
       }
 
