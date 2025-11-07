@@ -60,7 +60,7 @@ export default function Header() {
     { label: "TechInterview", value: "/interview/tech", icon: Mic },
     { label: "Resume", value: "/resume", icon: FileText },
     { label: "Question Practice", value: "/questions", icon: CheckSquare },
-    { label: "Get job", value: "https://agentic-resume-anayzer-dc5jxnwkzybireenthwtpu.streamlit.app/", icon: CheckSquare },
+    { label: "Get job", value: "https://ankur857-agenticai-hackathon-app-kqxaja.streamlit.app//", icon: CheckSquare },
   ];
 
   return (
